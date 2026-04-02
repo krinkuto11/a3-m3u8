@@ -22,26 +22,24 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ==========================================
 # STAGE 2: Distroless (Final Image)
 # ==========================================
-# Use the official Google Distroless Python 3 image based on Debian 12
 FROM gcr.io/distroless/python3-debian12
 
 WORKDIR /app
 
-# Copy the virtual environment from the builder stage
+# Copiamos el entorno virtual de la fase de construcción
 COPY --from=builder /venv /venv
 
-# Copy our application code
+# Copiamos nuestro código
 COPY main.py .
 
-# Expose the port FastAPI will run on
 EXPOSE 8000
 
-# Set environment variables for Python
+# Añadimos la ruta de los paquetes del venv al PYTHONPATH
+# Debian 12 (bookworm) usa Python 3.11 por defecto
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
+    PYTHONPATH=/venv/lib/python3.11/site-packages:/app
 
-# The distroless python3 image has an ENTRYPOINT of ["/usr/bin/python3"]
-# So we pass the path to the uvicorn executable inside our venv as the first argument,
-# followed by the arguments for uvicorn itself.
-CMD ["/venv/bin/uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# La imagen distroless ya tiene ENTRYPOINT ["/usr/bin/python3"]
+# Así que solo le pasamos los argumentos para ejecutar el módulo
+CMD ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
