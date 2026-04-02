@@ -42,4 +42,4 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # La imagen distroless ya tiene ENTRYPOINT ["/usr/bin/python3"]
 # Así que solo le pasamos los argumentos para ejecutar el módulo
-CMD ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8012"]
